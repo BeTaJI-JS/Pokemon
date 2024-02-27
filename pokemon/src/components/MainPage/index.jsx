@@ -3,33 +3,37 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGetItemQuery, useGetItemsQuery } from "../../store/api";
 import { useNavigate } from "react-router-dom";
 import { setPokemonInfo } from "../../store/pokedex";
+import { useDispatch } from "react-redux";
 
 
 export const MainPage = () => {
+  const dispatch = useDispatch();
   const [page, setPage] = useState(1); // Состояние для отслеживания номера страницы
   const [url, setUrl] = useState("");
 
+  console.log("url", url);
+
   const navigate = useNavigate()
-  console.log("url--->>>", url);
+  // console.log("url--->>>", url);
   const { data = [], isFetching } = useGetItemsQuery({ pageSize: 10, page });
-  const { data: pokeInfo = [] } = useGetItemQuery({ url });
-  // console.log("pokeInfo===>>>", pokeInfo);
+  const { data: pokeInfo = [] } = useGetItemQuery({url});
+  console.log("pokeInfo useGetItemQuery===>>>", pokeInfo);
 
 
 
   const [allPokemons, setAllPokemons] = useState([]); // любоптынй факт, если делать через useMemo  - не отрисовывается
 
-  console.log("isFetching===>", isFetching);
+  // console.log("isFetching===>", isFetching);
   // console.log("data==>>>", data);
   const pokemons = useMemo(() => data?.results, [data]);
-  console.log("pokemons", pokemons);
+  // console.log("pokemons", pokemons);
 
   const LoadPokemons = useCallback(async () => {
     for (var i = 0; i < pokemons?.length; i++) {
       await fetch(pokemons[i].url)
         .then((res) => res.json())
         .then((res) => {
-          console.log("res--->>", res);
+          // console.log("res--->>", res);
           const pokemonInfo = {
             name: res.name,
             id: res.id,
@@ -38,7 +42,7 @@ export const MainPage = () => {
             image: res.sprites.front_default,
             url: pokemons[i].url,
           };
-          console.log("pokemonInfo--->>>", pokemonInfo);
+          // console.log("pokemonInfo--->>>", pokemonInfo);
           setAllPokemons((prev) => [...prev, pokemonInfo]);
         });
     }
@@ -76,11 +80,12 @@ export const MainPage = () => {
 
   console.log("allPokemons-->", allPokemons);
 
-  const clickHandler = useCallback((url)=>{
-    setUrl(url);
-    setPokemonInfo(pokeInfo); // не срабатывает - 
+  const clickHandler = useCallback(async(url)=>{
+    console.log('URL CALLBACK--->>>>>',url);
+    await setUrl(url);
+    dispatch(setPokemonInfo(pokeInfo)); // не срабатывает - 
     navigate("/pokemonInfo");
-  },[navigate, pokeInfo])
+  },[navigate, dispatch, pokeInfo])
 
   return (
     <>
@@ -90,7 +95,8 @@ export const MainPage = () => {
           <div
             key={pokemon.id}
             style={{ color: "red" }}
-            onClick={() => clickHandler(pokemon.url)}
+            onClick={() => {
+              clickHandler(pokemon?.url)}}
           >
             <div>{pokemon.name}</div>
             <img src={pokemon.image} alt={`${pokemon.name}`} />

@@ -2,10 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   pokemons: [],
-pokemonInfo: {}
+pokemonInfo: null,
 };
 
-const { actions: pokedexActions, reducer: pokedex } = createSlice({
+const { actions: pokedexActions, reducer: pokemonsReducer } = createSlice({
   initialState,
   name: "pokemons",
   reducers: {
@@ -13,12 +13,13 @@ const { actions: pokedexActions, reducer: pokedex } = createSlice({
       console.log("payload", payload);
       state.pokemons = payload;
     },
-    setPokemonInfo(state, payload){
+    setPokemonInfo(state, {payload}) {
+      alert('asd')
       console.log("payload====>>>", payload);
-      state.pokemonInfo = payload
-    }
+      state.pokemonInfo = payload;
+    },
   },
 });
 
 export const { setAllPokemons, setPokemonInfo } = pokedexActions;
-export default pokedex;
+export default pokemonsReducer;
