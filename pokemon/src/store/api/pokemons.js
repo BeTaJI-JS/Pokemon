@@ -32,11 +32,8 @@ export const pokemonsApi = createApi({
       },
     }),
     getItem: builder.query({
-      // query: ({url}) => ({method:'get', url: url && url })
-      // query: ({ url }) => ({ method: "get", url }),
-      query: ({ url }) =>{
-        console.log('URL QUERY===>>',url);
-        return { method: "get", url: url && url }},
+      query: ({ id }) =>{
+        return { method: "get", url: `${baseURL}/pokemon/${id}` };},
     }),
   }),
 });

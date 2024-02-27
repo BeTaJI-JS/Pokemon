@@ -12,7 +12,7 @@ const App =() => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage />} />
-          <Route path="/pokemonInfo" element={<NestedPage/>}/>
+          <Route path='/pokemon/:id' element={<NestedPage/>}/>
         </Routes>
       </BrowserRouter>
     </Provider>
