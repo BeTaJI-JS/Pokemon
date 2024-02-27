@@ -31,5 +31,9 @@ export const pokemonsApi = createApi({
         };
       },
     }),
+    getItem: builder.query({
+      // query: ({url}) => ({method:'get', url: url && url })
+      query: ({ url }) => ({ method: "get", url }),
+    }),
   }),
 });
