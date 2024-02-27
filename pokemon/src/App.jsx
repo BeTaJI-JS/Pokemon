@@ -60,7 +60,6 @@ const MainPage = () => {
       }
       
     };
-
     window.addEventListener("scroll", handleScroll);
 
     return () => {
