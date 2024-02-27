@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGetItemsQuery } from "../../store/api";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import logo from '../../assets/pokedex_logo.png'
 
 
 export const MainPage = () => {
@@ -8,10 +9,10 @@ export const MainPage = () => {
   const [allPokemons, setAllPokemons] = useState([]); // любоптынй факт, если делать через useMemo  - не отрисовывается
 
   const navigate = useNavigate();
-  const { data = [], isFetching } = useGetItemsQuery({ pageSize: 10, page });// приходит только имя и ссылка
+  const { data = [], isFetching } = useGetItemsQuery({});// приходит только имя и ссылка
 
   const pokemons = useMemo(() => data?.results, [data]);
-
+console.log("pokemons", pokemons);
   const loadPokemons = useCallback(async () => {
     for (var i = 0; i < pokemons?.length; i++) {
       await fetch(pokemons[i].url)
@@ -72,6 +73,11 @@ export const MainPage = () => {
 
   return (
     <>
+      <div>
+        <Link to="/">
+          <img title="home" alt="home" src={logo} />
+        </Link>
+      </div>
       <h1>ПОКЕМОНЫ ЕПТА</h1>
       <div>
         {allPokemons?.map((pokemon) => (
