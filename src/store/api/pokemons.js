@@ -16,6 +16,7 @@ export const pokemonsApi = createApi({
       // providesTags: cacheHandler(REQUESTS_API_TAGS.RECORDS),
       query: ({ limit, offset }) => {
         console.log("{ limit, offset }--->>>>>>", { limit, offset });
+        //urlSearchParams || params
         return {
           method: "get",
           // url: `${endpoint}?${stringParams}`,

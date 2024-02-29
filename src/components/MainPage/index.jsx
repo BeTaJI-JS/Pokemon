@@ -14,7 +14,7 @@ const itemHeight = 40;
 const containerHeight = 700;
 // const overscan = 3;
 
-const threshold = 700
+const threshold = 700;
 
 export const MainPage = () => {
   // const [page, setPage] = useState(1); // Состояние для отслеживания номера страницы
@@ -23,9 +23,13 @@ export const MainPage = () => {
   const [, setIsScrolling] = useState(false);
   const [fullData, setFullData] = useState([]);
 
+  // const [visibleData, setVisibleData] = useState([]);
+  const [startIndex, setStartIndex] = useState(0);
+  const [endIndex, setEndIndex] = useState(0);
+
   console.log("fullData--->>>", fullData);
 
-  const [limit] = useState(20);
+  const [limit] = useState(20); // в константу
   const [offset, setOffset] = useState(0);
   //   console.log("offset--->>>>", offset);
   // console.log("scrollTop-->", scrollTop);
@@ -43,7 +47,7 @@ export const MainPage = () => {
     }
   }, [data?.results]);
 
-  useLayoutEffect(() => {
+  useLayoutEffect(() => { // использовать юз эфект
     const scrollElement = scrollElementRef.current;
     console.log("scrollElement===>>>", scrollElement);
     if (!scrollElement) {
@@ -54,7 +58,7 @@ export const MainPage = () => {
       const scrollTop = scrollElement.scrollTop;
       // console.log("scrollTop--->", scrollTop);
 
-      setScrollTop(scrollTop);
+      setScrollTop(scrollTop); //! обьединить юз эфекты нижний в верхний
     };
     handleScroll();
 
@@ -69,6 +73,7 @@ export const MainPage = () => {
       return;
     }
 
+    //!убрать таймаут добавить линтер
     const handleScroll = () => {
       // console.log("scrollElement.clientHeight==>>>", scrollElement.clientHeight);
       // console.log("scrollElement.scrollTop==>>>", scrollElement.scrollTop);
@@ -77,10 +82,11 @@ export const MainPage = () => {
       //   scrollElement.scrollHeight
       // );
       setIsScrolling(true);
-
+      
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
+        // console.warn('sssss');
 
         if (
           scrollElement.clientHeight + scrollElement.scrollTop >=
