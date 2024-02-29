@@ -11,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/pokedex_logo.png";
 
 const itemHeight = 40;
-const containerHeight = 1000;
+const containerHeight = 400;
 const overscan = 3;
 
 export const MainPage = () => {
@@ -20,8 +20,9 @@ export const MainPage = () => {
   const [scrollTop, setScrollTop] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
 
-  const [limit, setLimit] = useState(60)
+  const [limit] = useState(100)
   const [offset, setOffset] = useState(0);
+  console.log("offset--->>>>", offset);
 console.log("scrollTop-->", scrollTop);
   const scrollElementRef = useRef(null);
 
@@ -33,6 +34,7 @@ console.log("scrollTop-->", scrollTop);
 
   useLayoutEffect(() => {
     const scrollElement = scrollElementRef.current;
+    console.log("scrollElement===>>>", scrollElement);
     if (!scrollElement) {
       return;
     }
@@ -50,7 +52,6 @@ console.log("scrollTop-->", scrollTop);
     return () => scrollElement.removeEventListener("scroll", handleScroll);
   }, []);
 
-
   useEffect(() => {
     const scrollElement = scrollElementRef.current;
     if (!scrollElement) {
@@ -58,11 +59,26 @@ console.log("scrollTop-->", scrollTop);
     }
 
     const handleScroll = () => {
+      console.log("scrollElement.clientHeight==>>>", scrollElement.clientHeight);
+      console.log("scrollElement.scrollTop==>>>", scrollElement.scrollTop);
+      console.log(
+        "!!!!===>>>scrollElement.scrollHeight-->>>",
+        scrollElement.scrollHeight
+      );
       setIsScrolling(true);
 
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
+
+        if (
+          scrollElement.clientHeight + scrollElement.scrollTop >=
+          scrollElement.clientHeight
+        ) {
+          alert("asasf");
+          // Достигли конца списка, увеличиваем offset
+          setOffset((prevOffset) => prevOffset + limit);
+        }
       }, 150); // таймаут, чтобы определить остановку скролла
     };
 
@@ -74,7 +90,32 @@ console.log("scrollTop-->", scrollTop);
       clearTimeout(scrollTimeout);
       scrollElement.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [limit, offset]);
+
+  // useEffect(() => {
+  //   const scrollElement = scrollElementRef.current;
+  //   if (!scrollElement) {
+  //     return;
+  //   }
+
+  //   const handleScroll = () => {
+  //     setIsScrolling(true);
+
+  //     clearTimeout(scrollTimeout);
+  //     scrollTimeout = setTimeout(() => {
+  //       setIsScrolling(false);
+  //     }, 150); // таймаут, чтобы определить остановку скролла
+  //   };
+
+  //   let scrollTimeout;
+
+  //   scrollElement.addEventListener("scroll", handleScroll);
+
+  //   return () => {
+  //     clearTimeout(scrollTimeout);
+  //     scrollElement.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, []);
 
   // const [startIndex, endIndex] = useMemo(() => {
   const virtualItems = useMemo(() => {
@@ -117,7 +158,7 @@ console.log("scrollTop-->", scrollTop);
           <img title="home" alt="home" src={logo} />
         </Link>
       </div>
-      <h1>ПОКЕМОНЫ ЕПТА</h1>
+      {/* <h1>ПОКЕМОНЫ ЕПТА</h1> */}
       <div
         ref={scrollElementRef}
         style={{
