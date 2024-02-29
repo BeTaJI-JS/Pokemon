@@ -20,7 +20,7 @@ export const MainPage = () => {
   const [scrollTop, setScrollTop] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
 
-  const [limit, setLimit] = useState(20)
+  const [limit, setLimit] = useState(60)
   const [offset, setOffset] = useState(0);
 console.log("scrollTop-->", scrollTop);
   const scrollElementRef = useRef(null);
@@ -37,8 +37,10 @@ console.log("scrollTop-->", scrollTop);
       return;
     }
     const handleScroll = () => {
+      // console.log('e.target',e);
       const scrollTop = scrollElement.scrollTop;
       // console.log("scrollTop--->", scrollTop);
+
       setScrollTop(scrollTop);
     };
     handleScroll();
@@ -61,7 +63,7 @@ console.log("scrollTop-->", scrollTop);
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
-      }, 150); // Устанавливаем таймаут, чтобы определить остановку скролла
+      }, 150); // таймаут, чтобы определить остановку скролла
     };
 
     let scrollTimeout;
@@ -73,28 +75,7 @@ console.log("scrollTop-->", scrollTop);
       scrollElement.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  // useEffect(() => {
-  //   const scrollElement = scrollElementRef.current;
-  //   if (!scrollElement) {
-  //     return;
-  //   }
 
-
-  //   const handleScroll = () => {
-  //     setIsScrolling(true);
-
-  //   };
-
-  //   scrollElement.addEventListener("scroll", handleScroll);
-
-  //   return () => {
-  //     scrollElement.removeEventListener("scroll", handleScroll);
-
-
-  //   };
-  // }, []);
-
-  // console.log("isScrolling--->", isScrolling);
   // const [startIndex, endIndex] = useMemo(() => {
   const virtualItems = useMemo(() => {
     const rangeStart = scrollTop;
