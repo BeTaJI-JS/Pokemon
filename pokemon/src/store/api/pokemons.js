@@ -13,8 +13,9 @@ export const pokemonsApi = createApi({
   endpoints: (builder) => ({
     getItems: builder.query({
       // providesTags: cacheHandler(REQUESTS_API_TAGS.RECORDS),
-      query: () => {
+      query: ({limit, offset}) => {
         // const params = new URLSearchParams();
+        // console.log('params,',params);
         // const idsString = ids ? [ids].flat().join(",") : ids;
         // if (page) {
         //   params.append("limit", pageSize);
@@ -30,7 +31,7 @@ export const pokemonsApi = createApi({
         return {
           method: "get",
           // url: `${endpoint}?${stringParams}`,
-          url: `${baseURL}?limit=48`,
+          url: `${baseURL}?limit=${limit}?offset=${offset}`,
         };
       },
     }),

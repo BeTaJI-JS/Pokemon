@@ -19,11 +19,14 @@ export const MainPage = () => {
   // const [allPokemons, setAllPokemons] = useState([]); // любоптынй факт, если делать через useMemo  - не отрисовывается
   const [scrollTop, setScrollTop] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
+
+  const [limit, setLimit] = useState(20)
+  const [offset, setOffset] = useState(0);
 console.log("scrollTop-->", scrollTop);
   const scrollElementRef = useRef(null);
 
     const navigate = useNavigate();
-    const { data = [], isFetching } = useGetItemsQuery({}); // приходит только имя и ссылка
+    const { data = [], isFetching } = useGetItemsQuery({limit , offset}); // приходит только имя и ссылка
 
     const allPokemons = useMemo(() => data?.results, [data]);
     // const allPokemons = pokemons;
