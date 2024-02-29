@@ -30,7 +30,7 @@ export const pokemonsApi = createApi({
         return {
           method: "get",
           // url: `${endpoint}?${stringParams}`,
-          url: baseURL,
+          url: `${baseURL}?limit=48`,
         };
       },
     }),
