@@ -15,7 +15,7 @@ const {id} = useParams()
   return (
     <>
       <div>
-        <Link to="/">
+        <Link to="/pokemon">
           <img alt="home" src={logo} title="home" />
         </Link>
       </div>

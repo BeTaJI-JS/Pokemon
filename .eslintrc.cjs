@@ -10,7 +10,6 @@ module.exports = {
   ignorePatterns: ["dist", ".eslintrc.cjs"],
   parserOptions: { ecmaVersion: "latest", sourceType: "module" },
   settings: { react: { version: "18.2" } },
-  // plugins: ["react-refresh"],
   plugins: ["sort-keys", "sort-destructure-keys", "import", "react-refresh"],
   rules: {
     "react/jsx-no-target-blank": "off",
@@ -79,37 +78,7 @@ module.exports = {
           },
           {
             group: "internal",
-            pattern: "consts/**",
-            position: "after",
-          },
-          {
-            group: "internal",
-            pattern: "contexts/**",
-            position: "after",
-          },
-          {
-            group: "internal",
             pattern: "helpers/**",
-            position: "after",
-          },
-          {
-            group: "internal",
-            pattern: "hooks/**",
-            position: "after",
-          },
-          {
-            group: "internal",
-            pattern: "pages/**",
-            position: "after",
-          },
-          {
-            group: "internal",
-            pattern: "routes/**",
-            position: "after",
-          },
-          {
-            group: "internal",
-            pattern: "layouts/**",
             position: "after",
           },
           {
@@ -120,16 +89,6 @@ module.exports = {
           {
             group: "internal",
             pattern: "store/**",
-            position: "after",
-          },
-          {
-            group: "internal",
-            pattern: "styles/**",
-            position: "after",
-          },
-          {
-            group: "internal",
-            pattern: "utils/**",
             position: "after",
           },
           {

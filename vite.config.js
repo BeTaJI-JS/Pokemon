@@ -3,8 +3,9 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "/pokemon",
   build: {
-    outDir: 'docs'
+    outDir: "docs",
   },
-   plugins: [react()]
-})
+  plugins: [react()],
+});
