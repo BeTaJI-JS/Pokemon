@@ -2,16 +2,19 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   // useMemo,
   useRef,
   useState,
 } from "react";
-import { useGetItemsQuery } from "../../store/api";
+
 import { Link, useNavigate } from "react-router-dom";
+
 import logo from "../../assets/pokedex_logo.png";
+import { useGetItemsQuery } from "../../store/api";
 
 const itemHeight = 40;
-const containerHeight = 700;
+const containerHeight = 800;
 // const overscan = 3;
 
 const threshold = 700;
@@ -25,11 +28,11 @@ export const MainPage = () => {
 
   // const [visibleData, setVisibleData] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
-  const [endIndex, setEndIndex] = useState(0);
+  const [endIndex, setEndIndex] = useState(20);
 
   console.log("fullData--->>>", fullData);
 
-  const [limit] = useState(20); // в константу
+  const limit= useMemo(()=> 20,[]); // в константу
   const [offset, setOffset] = useState(0);
   //   console.log("offset--->>>>", offset);
   // console.log("scrollTop-->", scrollTop);
@@ -40,6 +43,20 @@ export const MainPage = () => {
 
   // const fullData = useMemo(() => data?.results, [data]);
   // const fullData = pokemons;
+
+useEffect(() => {
+  const visibleRowCount = Math.ceil(
+    scrollElementRef.current.clientHeight / itemHeight
+  ); // Количество видимых строк
+  const newStartIndex = Math.max(0, Math.floor(scrollTop / itemHeight)); // Новое значение startIndex
+  const newEndIndex = Math.min(
+    newStartIndex + visibleRowCount - 1,
+    fullData.length - 1
+  ); // Новое значение endIndex
+
+  setStartIndex(newStartIndex);
+  setEndIndex(newEndIndex);
+}, [scrollTop, fullData]);
 
   useEffect(() => {
     if (data?.results?.length > 0) {
@@ -68,96 +85,32 @@ export const MainPage = () => {
     return () => scrollElement.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const scrollElement = scrollElementRef.current;
-    if (!scrollElement) {
-      return;
+useEffect(() => {
+  const scrollElement = scrollElementRef.current;
+  if (!scrollElement) {
+    return;
+  }
+
+  const handleScroll = () => {
+    setIsScrolling(true);
+
+    if (
+      scrollElement.clientHeight + scrollElement.scrollTop >=
+      scrollElement.scrollHeight - threshold
+    ) {
+      setIsScrolling(false);
+      // alert("Скрол ниже рамки клиента - добавляю offset в запрос");
+      // Достигли конца списка, увеличиваем offset
+      setOffset((prevOffset) => prevOffset + limit);
     }
+  };
 
-    //!убрать таймаут добавить линтер
-    const handleScroll = () => {
-      // console.log("scrollElement.clientHeight==>>>", scrollElement.clientHeight);
-      // console.log("scrollElement.scrollTop==>>>", scrollElement.scrollTop);
-      // console.log(
-      //   "!!!!===>>>scrollElement.scrollHeight-->>>",
-      //   scrollElement.scrollHeight
-      // );
-      setIsScrolling(true);
+  scrollElement.addEventListener("scroll", handleScroll);
 
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        setIsScrolling(false);
-        // console.warn('sssss');
-
-        if (
-          scrollElement.clientHeight + scrollElement.scrollTop >=
-          scrollElement.scrollHeight - threshold
-        ) {
-          // alert("Скрол ниже рамки клиента - добавляю offset в запрос");
-          // Достигли конца списка, увеличиваем offset
-          setOffset((prevOffset) => prevOffset + limit);
-        }
-      }, 500); // таймаут, чтобы определить остановку скролла
-    };
-
-    let scrollTimeout;
-
-    scrollElement.addEventListener("scroll", handleScroll);
-
-    return () => {
-      clearTimeout(scrollTimeout);
-      scrollElement.removeEventListener("scroll", handleScroll);
-      // setFullData([])
-    };
-  }, [limit, offset]);
-
-  // useEffect(() => {
-  //   const scrollElement = scrollElementRef.current;
-  //   if (!scrollElement) {
-  //     return;
-  //   }
-
-  //   const handleScroll = () => {
-  //     setIsScrolling(true);
-
-  //     clearTimeout(scrollTimeout);
-  //     scrollTimeout = setTimeout(() => {
-  //       setIsScrolling(false);
-  //     }, 150); // таймаут, чтобы определить остановку скролла
-  //   };
-
-  //   let scrollTimeout;
-
-  //   scrollElement.addEventListener("scroll", handleScroll);
-
-  //   return () => {
-  //     clearTimeout(scrollTimeout);
-  //     scrollElement.removeEventListener("scroll", handleScroll);
-  //   };
-  // }, []);
-
-  //TODO virtualItems - не работает корректно НО при скроллинге дает новые данные по запросу корреткно
-  // const [startIndex, endIndex] = useMemo(() => {
-  // const virtualItems = useMemo(() => {
-  //   const rangeStart = scrollTop;
-  //   const rangeEnd = scrollTop + containerHeight;
-
-  //   let startIndex = Math.floor(rangeStart / itemHeight);
-  //   let endIndex = Math.floor(rangeEnd / itemHeight);
-
-  //   startIndex = Math.max(0, startIndex - overscan);
-  //   endIndex = Math.min(fullData?.length - 1, endIndex + overscan);
-
-  //   const virtualItems = [];
-  //   for (let i = startIndex; i < endIndex; i++) {
-  //     virtualItems.push({
-  //       index: i,
-  //       offsetTop: i * itemHeight,
-  //     });
-  //   }
-
-  //   return virtualItems;
-  // }, [scrollTop, fullData?.length]);
+  return () => {
+    scrollElement.removeEventListener("scroll", handleScroll);
+  };
+}, [limit, offset]);
 
   const clickHandler = useCallback(
     (id) => {
@@ -166,11 +119,12 @@ export const MainPage = () => {
     [navigate]
   );
 
-  // const itemsToRender = fullData.slice(startIndex, endIndex +1)
-  // console.log("itemsToRender_______>", itemsToRender);
-  const totalListHeight = fullData?.length > 0 && itemHeight * fullData?.length;
+  console.log("startIndex==>>>>", startIndex);
+  console.log("endIndex==>>>>", endIndex);
 
-  console.log("totalListHeight--->>>", totalListHeight);
+  const pokemonsToRender= useMemo(()=> fullData.slice(startIndex, endIndex),[fullData,startIndex,endIndex])
+  console.log("pokemonsToRender==>>>", pokemonsToRender);
+
   return (
     <>
       <div>
@@ -182,24 +136,24 @@ export const MainPage = () => {
       <div
         ref={scrollElementRef}
         style={{
-          height: containerHeight,
-          overflowY: "scroll",
           border: "3px solid red",
+          // height: containerHeight,
+          overflowY: "scroll",
           position: "relative",
         }}
       >
         {/* <div> */}
-        {fullData?.map((pokemon) => {
+        {pokemonsToRender?.map((pokemon) => {
           // const pokemon = fullData[virtualItem.index];
           return (
             <div
               key={pokemon.name}
               style={{
-                height: itemHeight,
-                boxSizing: "border-box",
-                border: "1px solid blue",
                 backgroundColor: "white",
+                border: "1px solid blue",
+                boxSizing: "border-box",
                 color: "red",
+                height: itemHeight,
                 top: 0,
                 transform: `translateY(${pokemon.offsetTop})px`,
               }}
