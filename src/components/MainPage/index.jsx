@@ -14,7 +14,7 @@ import logo from "../../assets/pokedex_logo.png";
 import { useGetItemsQuery } from "../../store/api";
 
 const itemHeight = 40;
-const containerHeight = 800;
+const containerHeight = 700;
 // const overscan = 3;
 
 const threshold = 700;
@@ -48,9 +48,10 @@ useEffect(() => {
   const visibleRowCount = Math.ceil(
     scrollElementRef.current.clientHeight / itemHeight
   ); // Количество видимых строк
+  console.log("visibleRowCount-->>", visibleRowCount);
   const newStartIndex = Math.max(0, Math.floor(scrollTop / itemHeight)); // Новое значение startIndex
   const newEndIndex = Math.min(
-    newStartIndex + visibleRowCount - 1,
+    newStartIndex + visibleRowCount,
     fullData.length - 1
   ); // Новое значение endIndex
 
@@ -137,7 +138,7 @@ useEffect(() => {
         ref={scrollElementRef}
         style={{
           border: "3px solid red",
-          // height: containerHeight,
+          height: containerHeight,
           overflowY: "scroll",
           position: "relative",
         }}
