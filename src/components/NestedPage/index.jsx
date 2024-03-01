@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
-import { useGetItemQuery } from "../../store/api";
+
 import logo from "../../assets/pokedex_logo.png";
+import { useGetItemQuery } from "../../store/api";
 
 
 export const NestedPage =()=> {
@@ -15,14 +16,14 @@ const {id} = useParams()
     <>
       <div>
         <Link to="/">
-          <img title="home" alt="home" src={logo} />
+          <img alt="home" src={logo} title="home" />
         </Link>
       </div>
       <div>
         <img
-          src={pokeInfo?.sprites?.front_default}
           alt={pokeInfo?.name}
-          style={{ width: 500, height: 400 }}
+          src={pokeInfo?.sprites?.front_default}
+          style={{ height: 400, width: 500 }}
         />
       </div>
       <div>

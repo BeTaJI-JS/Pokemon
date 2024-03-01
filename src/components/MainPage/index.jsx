@@ -47,7 +47,8 @@ export const MainPage = () => {
     }
   }, [data?.results]);
 
-  useLayoutEffect(() => { // использовать юз эфект
+  useLayoutEffect(() => {
+    // использовать юз эфект
     const scrollElement = scrollElementRef.current;
     console.log("scrollElement===>>>", scrollElement);
     if (!scrollElement) {
@@ -82,7 +83,7 @@ export const MainPage = () => {
       //   scrollElement.scrollHeight
       // );
       setIsScrolling(true);
-      
+
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
@@ -174,7 +175,7 @@ export const MainPage = () => {
     <>
       <div>
         <Link to="/">
-          <img title="home" alt="home" src={logo} />
+          <img alt="home" src={logo} title="home" />
         </Link>
       </div>
       {/* <h1>ПОКЕМОНЫ ЕПТА</h1> */}

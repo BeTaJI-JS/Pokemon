@@ -9,9 +9,17 @@ export const pokemonsApi = createApi({
     // baseUrl: process.env.BASE_URL,
     baseUrl: baseURL,
   }),
-  reducerPath: "pokemonsApi",
   // tagTypes: ["Pokemon"],
   endpoints: (builder) => ({
+    getItem: builder.query({
+      query: ({ id }) => {
+        return {
+          method: "get",
+          url: `${baseURL}/${id}`,
+          // providesTags: ["Pokemon"],
+        };
+      },
+    }),
     getItems: builder.query({
       // providesTags: cacheHandler(REQUESTS_API_TAGS.RECORDS),
       query: ({ limit, offset }) => {
@@ -25,14 +33,6 @@ export const pokemonsApi = createApi({
         };
       },
     }),
-    getItem: builder.query({
-      query: ({ id }) => {
-        return {
-          method: "get",
-          url: `${baseURL}/${id}`,
-          // providesTags: ["Pokemon"],
-        };
-      },
-    }),
   }),
+  reducerPath: "pokemonsApi",
 });
