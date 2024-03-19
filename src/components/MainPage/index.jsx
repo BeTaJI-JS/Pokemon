@@ -12,6 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import logo from "../../assets/pokedex_logo.png";
 import { useGetItemsQuery } from "../../store/api";
+import VirtualScroll from "../VirtualScroll/virtualScroll";
 
 const itemHeight = 40;
 const containerHeight = 700;
@@ -44,47 +45,68 @@ export const MainPage = () => {
   // const fullData = useMemo(() => data?.results, [data]);
   // const fullData = pokemons;
 
-useEffect(() => {
-  const visibleRowCount = Math.ceil(
-    scrollElementRef.current.clientHeight / itemHeight
-  ); // Количество видимых строк
-  console.log("visibleRowCount-->>", visibleRowCount);
-  const newStartIndex = Math.max(0, Math.floor(scrollTop / itemHeight)); // Новое значение startIndex
-  const newEndIndex = Math.min(
-    newStartIndex + visibleRowCount,
-    fullData.length - 1
-  ); // Новое значение endIndex
+// useEffect(() => {
+//   const visibleRowCount = Math.ceil(
+//     scrollElementRef.current.clientHeight / itemHeight
+//   ); // Количество видимых строк
+//   console.log("visibleRowCount-->>", visibleRowCount);
+//   const newStartIndex = Math.max(0, Math.floor(scrollTop / itemHeight)); // Новое значение startIndex
+//   const newEndIndex = Math.min(
+//     newStartIndex + visibleRowCount,
+//     fullData.length - 1
+//   ); // Новое значение endIndex
 
-  setStartIndex(newStartIndex);
-  setEndIndex(newEndIndex);
-}, [scrollTop, fullData]);
+//   setStartIndex(newStartIndex);
+//   setEndIndex(newEndIndex);
+// }, [scrollTop, fullData]);
 
   useEffect(() => {
     if (data?.results?.length > 0) {
       setFullData((prev) => [...prev, ...data.results]);
     }
+
+    // // использовать юз эфект
+    // const scrollElement = scrollElementRef.current;
+    // console.log("scrollElement===>>>", scrollElement);
+    // if (!scrollElement) {
+    //   return;
+    // }
+    // const handleScroll = () => {
+    //   // console.log('e.target',e);
+    //   const scrollTop = scrollElement.scrollTop;
+    //   // console.log("scrollTop--->", scrollTop);
+
+    //   setScrollTop(scrollTop); //! обьединить юз эфекты нижний в верхний
+    // };
+    // handleScroll();
+
+    // scrollElement.addEventListener("scroll", handleScroll);
+
+    // return () => scrollElement.removeEventListener("scroll", handleScroll);
   }, [data?.results]);
 
-  useLayoutEffect(() => {
-    // использовать юз эфект
-    const scrollElement = scrollElementRef.current;
-    console.log("scrollElement===>>>", scrollElement);
-    if (!scrollElement) {
-      return;
-    }
-    const handleScroll = () => {
-      // console.log('e.target',e);
-      const scrollTop = scrollElement.scrollTop;
-      // console.log("scrollTop--->", scrollTop);
+  // useLayoutEffect(() => {
+  //   // использовать юз эфект
+  //   const scrollElement = scrollElementRef.current;
+  //   console.log("scrollElement===>>>", scrollElement);
+  //   if (!scrollElement) {
+  //     return;
+  //   }
+  //   const handleScroll = () => {
+  //     // console.log('e.target',e);
+  //     const scrollTop = scrollElement.scrollTop;
+  //     // console.log("scrollTop--->", scrollTop);
 
-      setScrollTop(scrollTop); //! обьединить юз эфекты нижний в верхний
-    };
-    handleScroll();
+  //     setScrollTop(scrollTop); //! обьединить юз эфекты нижний в верхний
 
-    scrollElement.addEventListener("scroll", handleScroll);
+    
+  //   };
+  //   handleScroll();
 
-    return () => scrollElement.removeEventListener("scroll", handleScroll);
-  }, []);
+  //   scrollElement.addEventListener("scroll", handleScroll);
+
+  //   return () => scrollElement.removeEventListener("scroll", handleScroll);
+  // }, []);
 
 useEffect(() => {
   const scrollElement = scrollElementRef.current;
@@ -93,7 +115,30 @@ useEffect(() => {
   }
 
   const handleScroll = () => {
+    const scrollTop = scrollElement.scrollTop;
+    //   // console.log("scrollTop--->", scrollTop);
+
+    setScrollTop(scrollTop); //! обьединить юз эфекты нижний в верхний
     setIsScrolling(true);
+    console.log("scrollTop=======>>>>", scrollTop);
+    // console.log("scrollTop=======>>>>", scrollTop);
+
+    const visibleRowCount = Math.ceil(scrollElement.clientHeight / itemHeight); // Количество видимых строк
+    console.log("visibleRowCount-->>", visibleRowCount);
+    // const newStartIndex = Math.min(0, Math.floor(scrollTop / itemHeight)); // Новое значение startnIndex
+    const newStartIndex = Math.floor(scrollTop / itemHeight); // Новое значение startnIndex
+
+    // const newStartIndex = Math.max(0,scrollTop/ itemHeight ); // Новое значение startIndex
+
+    console.log("newStartIndex===!!!!!!!!!!!!!!===>>>>", newStartIndex);
+    const newEndIndex = Math.min(
+      newStartIndex + visibleRowCount +1,
+      fullData.length - 1
+    ); // Новое значение endIndex
+    console.log("newEndIndex", newEndIndex);
+
+    setStartIndex(newStartIndex);
+    setEndIndex(newEndIndex);
 
     if (
       scrollElement.clientHeight + scrollElement.scrollTop >=
@@ -111,7 +156,9 @@ useEffect(() => {
   return () => {
     scrollElement.removeEventListener("scroll", handleScroll);
   };
-}, [limit, offset]);
+}, [limit, offset, fullData.length, scrollTop]);
+
+
 
   const clickHandler = useCallback(
     (id) => {
@@ -123,7 +170,9 @@ useEffect(() => {
   console.log("startIndex==>>>>", startIndex);
   console.log("endIndex==>>>>", endIndex);
 
-  const pokemonsToRender= useMemo(()=> fullData.slice(startIndex, endIndex),[fullData,startIndex,endIndex])
+  // const pokemonsToRender= useMemo(()=> fullData.slice(startIndex, endIndex),[fullData,startIndex,endIndex])
+  const pokemonsToRender = fullData.slice(startIndex, endIndex)
+
   console.log("pokemonsToRender==>>>", pokemonsToRender);
 
   return (
@@ -143,32 +192,40 @@ useEffect(() => {
           position: "relative",
         }}
       >
-        {/* <div> */}
-        {pokemonsToRender?.map((pokemon) => {
-          // const pokemon = fullData[virtualItem.index];
-          return (
-            <div
-              key={pokemon.name}
-              style={{
-                backgroundColor: "white",
-                border: "1px solid blue",
-                boxSizing: "border-box",
-                color: "red",
-                height: itemHeight,
-                top: 0,
-                transform: `translateY(${pokemon.offsetTop})px`,
-              }}
-              onClick={() => {
-                clickHandler(pokemon.name);
-              }}
-            >
-              <div>{pokemon.name}</div>
-              {/* <img src={pokemon.image} alt={`${pokemon.name}`} /> */}
-            </div>
-          );
-        })}
-        {/* </div> */}
+        <div>
+          {pokemonsToRender?.map((pokemon) => {
+            // console.log("pokemon", pokemon);
+            // const pokemon = fullData[virtualItem.index];
+            return (
+              <div
+                key={pokemon.name}
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid blue",
+                  boxSizing: "border-box",
+                  color: "red",
+                  height: itemHeight,
+                  top: 0,
+                  transform: `translateY(${pokemon.offsetTop})px`,
+                }}
+                onClick={() => {
+                  clickHandler(pokemon.name);
+                }}
+              >
+                <div>{pokemon.name}</div>
+                {/* <img alt={`${pokemon.name}`} src={pokemon.url} /> */}
+              </div>
+            );
+          })}
+        </div>
         {isFetching && <div>Loading...</div>}
+        {/* <VirtualScroll
+          containerHeight={containerHeight}
+          items={pokemonsToRender}
+          rowHeight={itemHeight}
+          totalItems={fullData.length}
+          visibleItemsLength={20}
+        /> */}
       </div>
     </>
   );
