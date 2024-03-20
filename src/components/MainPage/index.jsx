@@ -16,6 +16,8 @@ import VirtualScroll from "../VirtualScroll/virtualScroll";
 
 const itemHeight = 40;
 const containerHeight = 700;
+const visibleRows = 20
+const limit = 20
 // const overscan = 3;
 
 const threshold = 700;
@@ -33,7 +35,7 @@ export const MainPage = () => {
 
   console.log("fullData--->>>", fullData);
 
-  const limit= useMemo(()=> 20,[]); // в константу
+  // const limit= useMemo(()=> 20,[]); // в константу
   const [offset, setOffset] = useState(0);
   //   console.log("offset--->>>>", offset);
   // console.log("scrollTop-->", scrollTop);
@@ -41,6 +43,13 @@ export const MainPage = () => {
 
   const navigate = useNavigate();
   const { data = null, isFetching } = useGetItemsQuery({ limit, offset }); // приходит только имя и ссылка
+
+
+    const getTopHeight = useMemo(() => itemHeight * startIndex, [startIndex]);
+    const getBottomHeight = useMemo(
+      () => fullData.length - (startIndex + visibleRows),
+      [startIndex, fullData]
+    );
 
   // const fullData = useMemo(() => data?.results, [data]);
   // const fullData = pokemons;
@@ -156,7 +165,25 @@ useEffect(() => {
   return () => {
     scrollElement.removeEventListener("scroll", handleScroll);
   };
-}, [limit, offset, fullData.length, scrollTop]);
+}, [ offset, fullData.length, scrollTop]);
+
+
+ const onScroll = useCallback(
+   (e) => {
+     // alert('asd')
+     // console.log("e.target.clientHeight--->", e.target.clientHeight);
+     // console.log("e.target.scrollTop--->", e.target.scrollTop);
+     console.log("e.target", e);
+     if (
+       e.target.clientHeight + e.target.scrollTop >=
+       e.target.scrollHeight - threshold
+     ) {
+      setIsScrolling(false);
+      setOffset((prevOffset) => prevOffset + limit);
+     }
+   },
+   []
+ );
 
 
 
@@ -191,33 +218,34 @@ useEffect(() => {
           overflowY: "scroll",
           position: "relative",
         }}
+        onScroll={(e)=>onScroll(e)}
       >
-        <div>
-          {pokemonsToRender?.map((pokemon) => {
-            // console.log("pokemon", pokemon);
-            // const pokemon = fullData[virtualItem.index];
-            return (
-              <div
-                key={pokemon.name}
-                style={{
-                  backgroundColor: "white",
-                  border: "1px solid blue",
-                  boxSizing: "border-box",
-                  color: "red",
-                  height: itemHeight,
-                  top: 0,
-                  transform: `translateY(${pokemon.offsetTop})px`,
-                }}
-                onClick={() => {
-                  clickHandler(pokemon.name);
-                }}
-              >
-                <div>{pokemon.name}</div>
-                {/* <img alt={`${pokemon.name}`} src={pokemon.url} /> */}
-              </div>
-            );
-          })}
-        </div>
+        <div style={{ height: getTopHeight }} />
+        {pokemonsToRender?.map((pokemon) => {
+          // console.log("pokemon", pokemon);
+          // const pokemon = fullData[virtualItem.index];
+          return (
+            <div
+              key={pokemon.name}
+              style={{
+                backgroundColor: "white",
+                border: "1px solid blue",
+                boxSizing: "border-box",
+                color: "red",
+                height: itemHeight,
+                top: 0,
+                transform: `translateY(${pokemon.offsetTop})px`,
+              }}
+              onClick={() => {
+                clickHandler(pokemon.name);
+              }}
+            >
+              <div>{pokemon.name}</div>
+              {/* <img alt={`${pokemon.name}`} src={pokemon.url} /> */}
+            </div>
+          );
+        })}
+        <div style={{ height: getBottomHeight }} />
         {isFetching && <div>Loading...</div>}
         {/* <VirtualScroll
           containerHeight={containerHeight}

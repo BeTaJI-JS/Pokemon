@@ -17,12 +17,16 @@ const itemHeight = 40;
 const containerHeight = 700;
 // const overscan = 3;
 
-const threshold = 700;
+const threshold = 600;
 
 export const MainPage = () => {
-  const [scrollTop, setScrollTop] = useState(0);
+  // const [scrollTop, setScrollTop] = useState(0);
   const [, setIsScrolling] = useState(false);
   const [fullData, setFullData] = useState([]);
+  const [startIndex, setStartIndex] = useState([]);
+  // const [startIndex, setStartIndex] = useState([]);
+
+
 
   console.log("fullData--->>>", fullData);
 
@@ -43,26 +47,26 @@ export const MainPage = () => {
   }, [data?.results]);
 
 
-useEffect(() => {
-  const scrollElement = scrollElementRef.current;
+//! useEffect(() => {
+//   const scrollElement = scrollElementRef.current;
 
-  if (!scrollElement) {
-    return;
-  }
+//   if (!scrollElement) {
+//     return;
+//   }
 
-  const handleScroll = () => {
-    const scrollTop = scrollElement.scrollTop;
-    setScrollTop(scrollTop);
-  };
+//   const handleScroll = () => {
+//     const scrollTop = scrollElement.scrollTop;
+//     setScrollTop(scrollTop);
+//   };
 
-  // handleScroll()
+//   // handleScroll()
 
-  scrollElement.addEventListener("scroll", handleScroll);
+//   scrollElement.addEventListener("scroll", handleScroll);
 
-  return () => {
-    scrollElement.removeEventListener("scroll", handleScroll);
-  };
-}, []);
+//   return () => {
+//     scrollElement.removeEventListener("scroll", handleScroll);
+//   };
+// }, []);
 
 
 const clickHandler = useCallback(
@@ -73,45 +77,55 @@ const clickHandler = useCallback(
 );
 
 
+//  const pokemonsToRender = useMemo(() => {
+//    const rangeEnd = scrollElementRef?.current?.scrollTop + containerHeight;
 
- const pokemonsToRender = useMemo(() => {
-   const rangeEnd = scrollTop + containerHeight;
+//    let startIndex = Math.ceil(scrollElementRef?.current?.scrollTop / itemHeight);
+//    let endIndex = Math.ceil(rangeEnd / itemHeight);
 
-   let startIndex = Math.floor(scrollTop / itemHeight);
-   let endIndex = Math.ceil(rangeEnd / itemHeight);
+//    startIndex = Math.max(0, startIndex);
+//    endIndex = Math.min(fullData.length - 1, endIndex);
 
-   startIndex = Math.max(0, startIndex);
-   endIndex = Math.min(fullData.length - 1, endIndex);
+//    const pokemons = [];
 
-   const pokemons = [];
+//    for (let index = startIndex; index <= endIndex; index++) {
+//      pokemons.push({
+//        index,
+//        offsetTop: index * itemHeight,
+//      });
+//    }
 
-   for (let index = startIndex; index <= endIndex; index++) {
-     pokemons.push({
-       index,
-       offsetTop: index * itemHeight,
-     });
-   }
-
-   return pokemons;
- }, [scrollTop, fullData.length]);
+//    return pokemons;
+//  }, [ fullData.length]);
 
 
-  console.log("pokemonsToRender==>>>", pokemonsToRender);
+  // console.log("pokemonsToRender==>>>", pokemonsToRender);
 
   const onScroll = useCallback((e)=> {
+    const rangeEnd = scrollElementRef?.current?.scrollTop + containerHeight;
+
+       let startIndex = Math.ceil(scrollElementRef?.current?.scrollTop / itemHeight);
+       let endIndex = Math.ceil(rangeEnd / itemHeight);
+
+       startIndex = Math.max(0, startIndex);
+       endIndex = Math.min(fullData.length - 1, endIndex);
+
+       setStartIndex(startIndex);
+
+      //  console.log("END, START INDEX", { endIndex, startIndex });
+
     // alert('asd')
-    console.log("e.target.clientHeight--->", e.target.clientHeight);
-    console.log("e.target.scrollTop--->", e.target.scrollTop);
-
-      if (
-       e.target.clientHeight + e.target.scrollTop >=
-       e.target.scrollHeight - threshold
-     ) {
-       setIsScrolling(false);
-       setOffset((prevOffset) => prevOffset + limit);
-     }
-
-  },[limit])
+    // console.log("e.target.clientHeight--->", e.target.clientHeight);
+    // console.log("e.target.scrollTop--->", e.target.scrollTop);
+    console.log("e.target", e);
+    if (
+      e.target.clientHeight + e.target.scrollTop >=
+      e.target.scrollHeight - threshold
+    ) {
+      //  setIsScrolling(false);
+      setOffset((prevOffset) => prevOffset + limit);
+    }
+  },[limit, fullData.length])
 
   return (
     <>
@@ -132,9 +146,9 @@ const clickHandler = useCallback(
         onScroll={(e) => onScroll(e)}
       >
         <div>
-          {pokemonsToRender?.map((el) => {
+          {fullData?.map((pokemon) => {
             // console.log("el", el);
-            const pokemon = fullData[el.index];
+            // const pokemon = fullData[el.index];
             // console.log("pokemon--->>>", pokemon);
             return (
               <div
@@ -146,8 +160,9 @@ const clickHandler = useCallback(
                   color: "red",
                   height: itemHeight,
                   top: 0,
-                  transform: `translateY(${el.offsetTop})px`,
+                  // transform: `translateY(${el.offsetTop})px`,
                 }}
+                // value={el.offsetTop}
                 onClick={() => {
                   clickHandler(pokemon.name);
                 }}
