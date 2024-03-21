@@ -10,6 +10,8 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/pokedex_logo.png";
 import { useGetItemsQuery } from "../../store/api";
 
+import { Wrapper, WrapperContent } from "./styles";
+
 const itemHeight = 40;
 const containerHeight = 700;
 const limit = 20;
@@ -44,8 +46,14 @@ export const MainPage = () => {
     [navigate]
   );
 
-  const onScroll = useCallback(
-    (e) => {
+
+  useEffect(()=> {
+  const scrollElement = scrollElementRef.current;
+ if (!scrollElement) {
+   return;
+ }
+
+    const onScroll =   (e) => {
       // const rangeEnd = scrollElementRef?.current?.scrollTop + containerHeight;
       let startIndex = Math.ceil(
         scrollElementRef?.current?.scrollTop / itemHeight
@@ -55,7 +63,6 @@ export const MainPage = () => {
       startIndex = Math.max(0, startIndex);
       // endIndex = Math.min(fullData.length - 1, endIndex);
 
-      setStartIndex(startIndex);
       console.log("e.target.scrollHeight ", e.target.scrollHeight);
       if (
         e.target.clientHeight + e.target.scrollTop >=
@@ -63,9 +70,40 @@ export const MainPage = () => {
       ) {
         setOffset((prevOffset) => prevOffset + limit);
       }
-    },
-    []
-  );
+      setStartIndex(startIndex);
+  }
+    scrollElement.addEventListener("scroll", onScroll);
+
+    return () => {
+      scrollElement.removeEventListener("scroll", onScroll);
+    };
+
+},[])
+  // const onScroll = useCallback(
+  //   (e) => {
+  //     // const rangeEnd = scrollElementRef?.current?.scrollTop + containerHeight;
+  //     let startIndex = Math.ceil(
+  //       scrollElementRef?.current?.scrollTop / itemHeight
+  //     );
+  //     // let endIndex = Math.ceil(rangeEnd / itemHeight);
+
+  //     startIndex = Math.max(0, startIndex);
+  //     // endIndex = Math.min(fullData.length - 1, endIndex);
+
+  //     console.log("e.target.scrollHeight ", e.target.scrollHeight);
+  //     if (
+  //       e.target.clientHeight + e.target.scrollTop >=
+  //       e.target.scrollHeight - threshold
+  //     ) {
+  //       setOffset((prevOffset) => prevOffset + limit);
+  //     }
+  //     setStartIndex(startIndex);
+
+  //   },
+  //   []
+  // );
+
+
 
   console.log(
     "scrollElementRef.current.scrollHeight=========>>>",
@@ -80,7 +118,7 @@ export const MainPage = () => {
         </Link>
       </div>
       {/* <h1>ПОКЕМОНЫ ЕПТА</h1> */}
-      <div
+      {/* <div
         ref={scrollElementRef}
         style={{
           border: "3px solid red",
@@ -88,9 +126,10 @@ export const MainPage = () => {
           overflowY: "scroll",
           position: "relative",
         }}
-        onScroll={(e) => onScroll(e)}
-      >
-        <div>
+        // onScroll={(e) => onScroll(e)}
+      > */}
+      <Wrapper ref={scrollElementRef}>
+        {/* <WrapperContent> */}
           {fullData?.slice(startIndex, startIndex + limit)?.map((pokemon) => {
             // console.log("el", el);
             // const pokemon = fullData[el.index];
@@ -116,9 +155,9 @@ export const MainPage = () => {
               </div>
             );
           })}
-        </div>
+        {/* </WrapperContent> */}
         {isFetching && <div>Loading...</div>}
-      </div>
+      </Wrapper>
     </>
   );
 };
