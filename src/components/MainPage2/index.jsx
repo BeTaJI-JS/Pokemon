@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -46,14 +41,13 @@ export const MainPage = () => {
     [navigate]
   );
 
+  useEffect(() => {
+    const scrollElement = scrollElementRef.current;
+    if (!scrollElement) {
+      return;
+    }
 
-  useEffect(()=> {
-  const scrollElement = scrollElementRef.current;
- if (!scrollElement) {
-   return;
- }
-
-    const onScroll =   (e) => {
+    const onScroll = (e) => {
       // const rangeEnd = scrollElementRef?.current?.scrollTop + containerHeight;
       let startIndex = Math.ceil(
         scrollElementRef?.current?.scrollTop / itemHeight
@@ -71,14 +65,13 @@ export const MainPage = () => {
         setOffset((prevOffset) => prevOffset + limit);
       }
       setStartIndex(startIndex);
-  }
+    };
     scrollElement.addEventListener("scroll", onScroll);
 
     return () => {
       scrollElement.removeEventListener("scroll", onScroll);
     };
-
-},[])
+  }, []);
   // const onScroll = useCallback(
   //   (e) => {
   //     // const rangeEnd = scrollElementRef?.current?.scrollTop + containerHeight;
@@ -102,8 +95,6 @@ export const MainPage = () => {
   //   },
   //   []
   // );
-
-
 
   console.log(
     "scrollElementRef.current.scrollHeight=========>>>",
@@ -130,31 +121,31 @@ export const MainPage = () => {
       > */}
       <Wrapper ref={scrollElementRef}>
         {/* <WrapperContent> */}
-          {fullData?.slice(startIndex, startIndex + limit)?.map((pokemon) => {
-            // console.log("el", el);
-            // const pokemon = fullData[el.index];
-            // console.log("pokemon--->>>", pokemon);
-            return (
-              <div
-                key={pokemon.name}
-                style={{
-                  backgroundColor: "white",
-                  border: "1px solid blue",
-                  boxSizing: "border-box",
-                  color: "red",
-                  height: itemHeight,
-                  top: 0,
-                  // transform: `translateY(${el.offsetTop})px`,
-                }}
-                // value={el.offsetTop}
-                onClick={() => {
-                  clickHandler(pokemon.name);
-                }}
-              >
-                <div>{pokemon.name}</div>
-              </div>
-            );
-          })}
+        {fullData?.slice(startIndex, startIndex + limit)?.map((pokemon) => {
+          // console.log("el", el);
+          // const pokemon = fullData[el.index];
+          // console.log("pokemon--->>>", pokemon);
+          return (
+            <div
+              key={pokemon.name}
+              style={{
+                backgroundColor: "white",
+                border: "1px solid blue",
+                boxSizing: "border-box",
+                color: "red",
+                height: itemHeight,
+                top: 0,
+                // transform: `translateY(${el.offsetTop})px`,
+              }}
+              // value={el.offsetTop}
+              onClick={() => {
+                clickHandler(pokemon.name);
+              }}
+            >
+              <div>{pokemon.name}</div>
+            </div>
+          );
+        })}
         {/* </WrapperContent> */}
         {isFetching && <div>Loading...</div>}
       </Wrapper>
