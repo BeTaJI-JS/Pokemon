@@ -198,9 +198,9 @@ useEffect(() => {
   console.log("endIndex==>>>>", endIndex);
 
   // const pokemonsToRender= useMemo(()=> fullData.slice(startIndex, endIndex),[fullData,startIndex,endIndex])
-  const pokemonsToRender = fullData.slice(startIndex, endIndex)
+  // const pokemonsToRender = fullData.slice(startIndex, endIndex)
 
-  console.log("pokemonsToRender==>>>", pokemonsToRender);
+  // console.log("pokemonsToRender==>>>", pokemonsToRender);
 
   return (
     <>
@@ -221,7 +221,7 @@ useEffect(() => {
         onScroll={(e)=>onScroll(e)}
       >
         <div style={{ height: getTopHeight }} />
-        {pokemonsToRender?.map((pokemon) => {
+        {fullData?.map((pokemon) => {
           // console.log("pokemon", pokemon);
           // const pokemon = fullData[virtualItem.index];
           return (
