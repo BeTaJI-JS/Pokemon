@@ -10,19 +10,15 @@ import { PokemonCard, Wrapper } from "./styles";
 const itemHeight = 40;
 const limit = 20;
 const threshold = 600;
+const containerHeight = 700;
 
 export const MainPage = () => {
   const [offset, setOffset] = useState(0);
   const [fullData, setFullData] = useState([]);
+
   const scrollElementRef = useRef(null);
   const navigate = useNavigate();
   const { data = null, isFetching } = useGetItemsQuery({ limit, offset });
-
-  useEffect(() => {
-    if (data?.results?.length > 0) {
-      setFullData((prev) => [...prev, ...data.results]);
-    }
-  }, [data?.results]);
 
   const clickHandler = useCallback(
     (id) => {
@@ -31,6 +27,14 @@ export const MainPage = () => {
     [navigate]
   );
 
+
+  useEffect(() => {
+    if (data?.results?.length > 0) {
+      setFullData((prev) => [...prev, ...data.results]);
+    }
+  }, [data?.results]);
+
+
   return (
     <>
       <div>
@@ -38,9 +42,17 @@ export const MainPage = () => {
           <img alt="home" src={logo} title="home" />
         </Link>
       </div>
-      <Wrapper ref={scrollElementRef} >
+      <Wrapper
+        // $containerHeight={itemHeight * fullData?.length}
+        $containerHeight={containerHeight}
+        ref={scrollElementRef}
+      >
         {fullData.map((item) => (
-          <PokemonCard key={item.name} onClick={() => clickHandler(item.name)}>
+          <PokemonCard
+            $itemHeight={itemHeight}
+            key={item.name}
+            onClick={() => clickHandler(item.name)}
+          >
             <div>{item.name}</div>
           </PokemonCard>
         ))}

@@ -27,7 +27,7 @@ export const MainPage = () => {
   // const [startIndex, setStartIndex] = useState([]);
   const [scrollProcess, setScrollProcess] = useState(false);
 
-  const [dataRange, setDataRange] = useState({ endIndex: 0, startIndex: 0 });
+  // const [dataRange, setDataRange] = useState({ endIndex: 0, startIndex: 0 });
 
   // смещение для запроса новых данных
   const [offset, setOffset] = useState(0);
@@ -139,14 +139,15 @@ export const MainPage = () => {
     const endIndex = Math.ceil(
       (scrollTop + containerHeight) / itemHeight +2
     );
-    return setDataRange({ endIndex, startIndex });
+    // return setDataRange({ endIndex, startIndex });
+    return { endIndex, startIndex };
   },[])
 
 console.log('foo------->>>', foo);
 
 
 
-console.log("dataRange===>>>", dataRange);
+// console.log("dataRange===>>>", dataRange);
   return (
     <>
       <div>
@@ -158,7 +159,7 @@ console.log("dataRange===>>>", dataRange);
         {/* <div style={{ height: itemHeight * dataRange.startIndex }} /> */}
         {fullData
           // .slice(dataRange.startIndex, dataRange.endIndex)
-          // ?.slice(startIndex, startIndex + limit) //пока без слайса - не рабоатет как надо сука
+          ?.slice(foo.startIndex, foo.startIndex + limit) //пока без слайса - не рабоатет как надо сука
           .map((pokemon) => {
             return (
               <PokemonCard
