@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 
 import { Link, useNavigate } from "react-router-dom";
@@ -24,8 +24,10 @@ const threshold = 600;
 export const MainPage = () => {
   // массив с данными для отображения
   const [fullData, setFullData] = useState([]);
-  const [startIndex, setStartIndex] = useState([]);
+  // const [startIndex, setStartIndex] = useState([]);
   const [scrollProcess, setScrollProcess] = useState(false);
+
+  const [dataRange, setDataRange] = useState({ endIndex: 0, startIndex: 0 });
 
   // смещение для запроса новых данных
   const [offset, setOffset] = useState(0);
@@ -35,13 +37,16 @@ export const MainPage = () => {
 
   const navigate = useNavigate();
 
-  const { data = null, isFetching } = useGetItemsQuery({ limit, offset }); // приходит только имя и ссылка
+  const { data = null, isFetching } = useGetItemsQuery({ limit, offset}); // приходит только имя и ссылка
 
   useEffect(() => {
     if (data?.results?.length > 0) {
       setFullData((prev) => [...prev, ...data.results]);
+      // setDataRange({ endIndex: data.results.length, startIndex: 0 });
     }
-  }, [data?.results]);
+    }, [data?.results, data?.results.length]);
+  // }, [data]);
+
 
   const clickHandler = useCallback(
     (id) => {
@@ -56,25 +61,43 @@ export const MainPage = () => {
     if (!scrollElement) {
       return;
     }
+        //  const { clientHeight, scrollTop } = scrollElement;
+        //  console.log("scrollTop", scrollTop);
+        //  const startIndex = Math.ceil(scrollTop / itemHeight);
+        //  const endIndex = Math.ceil(((scrollTop + containerHeight) / itemHeight) +2);
+        //  console.log("startIndex--->>", startIndex);
+        //  console.log("endIndex--->>", endIndex);
+
+        //  setDataRange({ endIndex, startIndex });
 
     const onScroll = (e) => {
       // высота элемента
       // const rangeEnd = scrollElementRef?.current?.scrollTop + containerHeight;
 
       // индекс элемента, на котором находится верхняя граница экрана
-      let startIndex = Math.ceil(
-        scrollElementRef?.current?.scrollTop / itemHeight
-      );
+      //! let startIndex = Math.ceil(
+      //   scrollElementRef?.current?.scrollTop / itemHeight
+      // );
 
       // индекс элемента, на котором находится нижняя граница экрана
       // let endIndex = Math.ceil(rangeEnd / itemHeight);
 
       // ограничиваем индексы, чтобы они не выходили за пределы массива
-      startIndex = Math.max(0, startIndex);
+      //! startIndex = Math.max(0, startIndex);
       // endIndex = Math.min(fullData.length - 1, endIndex);
 
       // если достигли нижнего порога, загружаем еще порцию данных
       // console.log("e.target.scrollHeight ", e.target.scrollHeight);
+      // const { clientHeight, scrollTop } = scrollElement;
+      // // console.log("scrollTop", scrollTop);
+      // const startIndex = Math.floor(scrollTop / itemHeight);
+      // const endIndex = Math.ceil(
+      //   (scrollTop + containerHeight) / itemHeight +2
+      // );
+      // // console.log("startIndex--->>", startIndex);
+      // // console.log("endIndex--->>", endIndex);
+
+      // setDataRange({ endIndex, startIndex });
 
       if (
         e.target.clientHeight + e.target.scrollTop >=
@@ -82,12 +105,11 @@ export const MainPage = () => {
       ) {
         setScrollProcess(true)
       }
-       setStartIndex(startIndex);
+    
     };
 
     scrollElement.addEventListener("scroll", onScroll);
 
-    // очищаем обра
     return () => {
       scrollElement.removeEventListener("scroll", onScroll);
     };
@@ -104,6 +126,27 @@ export const MainPage = () => {
     setScrollProcess(false)
   },[fullData])
 
+
+  const foo = useMemo(()=> {
+    const scrollElement = scrollElementRef?.current;
+     if (!scrollElement) {
+       return;
+     }
+
+    const { scrollTop } = scrollElement;
+    // console.log("scrollTop", scrollTop);
+    const startIndex = Math.floor(scrollTop / itemHeight);
+    const endIndex = Math.ceil(
+      (scrollTop + containerHeight) / itemHeight +2
+    );
+    return setDataRange({ endIndex, startIndex });
+  },[])
+
+console.log('foo------->>>', foo);
+
+
+
+console.log("dataRange===>>>", dataRange);
   return (
     <>
       <div>
@@ -111,18 +154,28 @@ export const MainPage = () => {
           <img alt="home" src={logo} title="home" />
         </Link>
       </div>
-      <Wrapper containerHeight={containerHeight} ref={scrollElementRef}>
-        <div style={{ height: itemHeight * startIndex }} />
+      <Wrapper $containerHeight={itemHeight * fullData?.length} ref={scrollElementRef}>
+        {/* <div style={{ height: itemHeight * dataRange.startIndex }} /> */}
         {fullData
-        // ?.slice(startIndex, startIndex + limit) //пока без слайса - не рабоатет как надо сука
-        .map((pokemon) => {
-          return (
-            <PokemonCard itemHeight={itemHeight} key={pokemon.name} onClick={() => clickHandler(pokemon.name)}>
-              <div>{pokemon.name}</div>
-            </PokemonCard>
-          );
-        })}
-        <div style={{ height: itemHeight * (fullData.length - startIndex - limit) }} />
+          // .slice(dataRange.startIndex, dataRange.endIndex)
+          // ?.slice(startIndex, startIndex + limit) //пока без слайса - не рабоатет как надо сука
+          .map((pokemon) => {
+            return (
+              <PokemonCard
+                $itemHeight={itemHeight}
+                key={pokemon.name}
+                onClick={() => clickHandler(pokemon.name)}
+              >
+                <div>{pokemon.name}</div>
+              </PokemonCard>
+            );
+          })}
+        {/* <div
+          style={{
+            height:
+              itemHeight * (fullData.length - dataRange.startIndex - limit),
+          }}
+        /> */}
         {isFetching && <div>Loading...</div>}
       </Wrapper>
     </>

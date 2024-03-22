@@ -31,34 +31,6 @@ export const MainPage = () => {
     [navigate]
   );
 
-  const handleObserver = useCallback((entries) => {
-    const target = entries[0];
-
-    if (target.isIntersecting) {
-      setOffset((prev) => prev + limit);
-    }
-  }, []);
-
-  const observer = useMemo(() => new IntersectionObserver(handleObserver, {
-    rootMargin: `${threshold}px 0px`,
-  }), [handleObserver]);
-
-  useEffect(() => {
-    const scrollElement = scrollElementRef.current;
-    if (scrollElement) {
-      observer.observe(scrollElement);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [observer]);
-
-  const startIndex = Math.max(0, offset - limit);
-  const endIndex = Math.min(fullData.length, offset + limit);
-
-  const visibleData = useMemo(() => fullData.slice(startIndex, endIndex), [fullData, startIndex, endIndex]);
-
   return (
     <>
       <div>
@@ -67,7 +39,7 @@ export const MainPage = () => {
         </Link>
       </div>
       <Wrapper ref={scrollElementRef} >
-        {visibleData.map((item) => (
+        {fullData.map((item) => (
           <PokemonCard key={item.name} onClick={() => clickHandler(item.name)}>
             <div>{item.name}</div>
           </PokemonCard>
