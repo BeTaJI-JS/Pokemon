@@ -33,7 +33,14 @@ console.log("startIndex-->", startIndex);
     const scrollElement = scrollElementRef.current;
     if (isFetching || !scrollElement) return;
 
+console.log("scrollElement.scrollHeight", scrollElement.scrollHeight);
 
+console.log("scrollElement.clientHeight", scrollElement.clientHeight);
+console.log("scrollElement.scrollTop", scrollElement.scrollTop);
+console.log(
+  "scrollElement.scrollHeight - threshold",
+  scrollElement.scrollHeight - threshold
+);
 
     if (
       scrollElement.clientHeight + scrollElement.scrollTop >=
@@ -52,6 +59,8 @@ console.log("startIndex-->", startIndex);
   useEffect(() => {
     const scrollElement = scrollElementRef.current;
     if (!scrollElement) return;
+      // setStartIndex(Math.ceil(scrollElement.scrollTop / itemHeight));
+
 
     scrollElement.addEventListener("scroll", handleScroll);
     return () => {
@@ -97,7 +106,7 @@ console.log("startIndex-->", startIndex);
       </div>
       <div style={{ height: `${topSpaceHeight}px` , position: "absolute"}} />
       <Wrapper $containerHeight={containerHeight} ref={scrollElementRef}>
-        {fullData.slice(startIndex, startIndex + limit+1).map((item) => (
+        {fullData.slice(startIndex, startIndex + limit).map((item) => (
           <PokemonCard
             $itemHeight={itemHeight}
             key={item.name}
