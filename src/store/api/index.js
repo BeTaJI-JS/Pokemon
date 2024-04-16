@@ -1,3 +1,3 @@
 import { pokemonsApi } from "./pokemons";
 
-export const {useGetItemsQuery, useGetItemQuery} = pokemonsApi
+export const {useGetItemQuery, useGetItemsQuery} = pokemonsApi

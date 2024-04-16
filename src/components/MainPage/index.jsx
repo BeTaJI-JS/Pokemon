@@ -1,192 +1,85 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  // useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import logo from "../../assets/pokedex_logo.png";
 import { useGetItemsQuery } from "../../store/api";
-import VirtualScroll from "../VirtualScroll/virtualScroll";
 
-const itemHeight = 40;
-const containerHeight = 700;
-const visibleRows = 20
-const limit = 20
-// const overscan = 3;
+import { PokemonCard, Wrapper } from "./styles";
 
-const threshold = 700;
+const WRAPPER_HEIGHT = 600;
+const VISIBLE_ELEMENTS = 20;
+const ELEMENT_HEIGHT = 40;
+const THRESHOLD_ELEMENTS = 5;
+const limit = 20;
 
-export const MainPage = () => {
-  // const [page, setPage] = useState(1); // Состояние для отслеживания номера страницы
-  // const [fullData, setfullData] = useState([]); // любоптынй факт, если делать через useMemo  - не отрисовывается
-  const [scrollTop, setScrollTop] = useState(0);
-  const [, setIsScrolling] = useState(false);
-  const [fullData, setFullData] = useState([]);
+// const visibleHeight = VISIBLE_ELEMENTS * ELEMENT_HEIGHT;
 
-  // const [visibleData, setVisibleData] = useState([]);
-  const [startIndex, setStartIndex] = useState(0);
-  const [endIndex, setEndIndex] = useState(20);
+const MainPage = () => {
+  const [skipIndex, setSkipIndex] = useState(0); // для слайса данных
+  // const [loadedIndex, setLoadedIndex] = useState(0); //количество загруженных данных( но по факту это же fullData.length - но переписав его получаю хер)
+  const [offset, setOffset] = useState(0); // для ртк
+  const [fullData, setFullData] = useState([]); // собираю все данные в общий массив
 
-  console.log("fullData--->>>", fullData);
+  // const { data = [], isFetching } = useGetItemsQuery({
+  //   limit,
+  //   offset
+  // }, {skip: false }); // TODO условие для пропуска запроса при первом рендере
 
-  // const limit= useMemo(()=> 20,[]); // в константу
-  const [offset, setOffset] = useState(0);
-  //   console.log("offset--->>>>", offset);
-  // console.log("scrollTop-->", scrollTop);
-  const scrollElementRef = useRef(null);
+  const { data = [], isFetching } = useGetItemsQuery(
+    {
+      limit,
+      offset,
+    },
+    {
+      // selectFromResult: (data) => {
+      //   // Обновляем состояние allData, добавляя новые данные к уже существующим
+      //   setFullData((prevData) => [...prevData, ...data]);
+      // },
+      // skip: false,
+    }
+  );
+  //select from results / ку - посмотреть можно ли аккумулировать данные
+  // console.log("loadedIndex-->", loadedIndex);
+  const containerRef = useRef(null);
+  // console.log('data--->',data);
 
-  const navigate = useNavigate();
-  const { data = null, isFetching } = useGetItemsQuery({ limit, offset }); // приходит только имя и ссылка
+  const loadedIndex = useMemo(() => fullData?.length, [fullData]);
 
-
-    const getTopHeight = useMemo(() => itemHeight * startIndex, [startIndex]);
-    const getBottomHeight = useMemo(
-      () => fullData.length - (startIndex + visibleRows),
-      [startIndex, fullData]
-    );
-
-  // const fullData = useMemo(() => data?.results, [data]);
-  // const fullData = pokemons;
-
-// useEffect(() => {
-//   const visibleRowCount = Math.ceil(
-//     scrollElementRef.current.clientHeight / itemHeight
-//   ); // Количество видимых строк
-//   console.log("visibleRowCount-->>", visibleRowCount);
-//   const newStartIndex = Math.max(0, Math.floor(scrollTop / itemHeight)); // Новое значение startIndex
-//   const newEndIndex = Math.min(
-//     newStartIndex + visibleRowCount,
-//     fullData.length - 1
-//   ); // Новое значение endIndex
-
-//   setStartIndex(newStartIndex);
-//   setEndIndex(newEndIndex);
-// }, [scrollTop, fullData]);
+  console.log("-loadedIndex", loadedIndex);
+  const skipHeight = useMemo(() => skipIndex * ELEMENT_HEIGHT, [skipIndex]);
+  // const notVisibleBottomHeight =  useMemo(() => loadedIndex * ELEMENT_HEIGHT - skipHeight - visibleHeight ,[loadedIndex, skipHeight]);
 
   useEffect(() => {
     if (data?.results?.length > 0) {
+      console.warn("lанные пришли");
       setFullData((prev) => [...prev, ...data.results]);
     }
+  }, [data]);
 
-    // // использовать юз эфект
-    // const scrollElement = scrollElementRef.current;
-    // console.log("scrollElement===>>>", scrollElement);
-    // if (!scrollElement) {
-    //   return;
-    // }
-    // const handleScroll = () => {
-    //   // console.log('e.target',e);
-    //   const scrollTop = scrollElement.scrollTop;
-    //   // console.log("scrollTop--->", scrollTop);
-
-    //   setScrollTop(scrollTop); //! обьединить юз эфекты нижний в верхний
-    // };
-    // handleScroll();
-
-    // scrollElement.addEventListener("scroll", handleScroll);
-
-    // return () => scrollElement.removeEventListener("scroll", handleScroll);
-  }, [data?.results]);
-
-  // useLayoutEffect(() => {
-  //   // использовать юз эфект
-  //   const scrollElement = scrollElementRef.current;
-  //   console.log("scrollElement===>>>", scrollElement);
-  //   if (!scrollElement) {
-  //     return;
-  //   }
-  //   const handleScroll = () => {
-  //     // console.log('e.target',e);
-  //     const scrollTop = scrollElement.scrollTop;
-  //     // console.log("scrollTop--->", scrollTop);
-
-  //     setScrollTop(scrollTop); //! обьединить юз эфекты нижний в верхний
-
-    
-  //   };
-  //   handleScroll();
-
-  //   scrollElement.addEventListener("scroll", handleScroll);
-
-  //   return () => scrollElement.removeEventListener("scroll", handleScroll);
-  // }, []);
-
-useEffect(() => {
-  const scrollElement = scrollElementRef.current;
-  if (!scrollElement) {
-    return;
-  }
-
-  const handleScroll = () => {
-    const scrollTop = scrollElement.scrollTop;
-    //   // console.log("scrollTop--->", scrollTop);
-
-    setScrollTop(scrollTop); //! обьединить юз эфекты нижний в верхний
-    setIsScrolling(true);
-    console.log("scrollTop=======>>>>", scrollTop);
-    // console.log("scrollTop=======>>>>", scrollTop);
-
-    const visibleRowCount = Math.ceil(scrollElement.clientHeight / itemHeight); // Количество видимых строк
-    console.log("visibleRowCount-->>", visibleRowCount);
-    // const newStartIndex = Math.min(0, Math.floor(scrollTop / itemHeight)); // Новое значение startnIndex
-    const newStartIndex = Math.floor(scrollTop / itemHeight); // Новое значение startnIndex
-
-    // const newStartIndex = Math.max(0,scrollTop/ itemHeight ); // Новое значение startIndex
-
-    console.log("newStartIndex===!!!!!!!!!!!!!!===>>>>", newStartIndex);
-    const newEndIndex = Math.min(
-      newStartIndex + visibleRowCount +1,
-      fullData.length - 1
-    ); // Новое значение endIndex
-    console.log("newEndIndex", newEndIndex);
-
-    setStartIndex(newStartIndex);
-    setEndIndex(newEndIndex);
-
-    if (
-      scrollElement.clientHeight + scrollElement.scrollTop >=
-      scrollElement.scrollHeight - threshold
-    ) {
-      setIsScrolling(false);
-      // alert("Скрол ниже рамки клиента - добавляю offset в запрос");
-      // Достигли конца списка, увеличиваем offset
-      setOffset((prevOffset) => prevOffset + limit);
+  useEffect(() => {
+    const scrollElement = containerRef.current;
+    if (isFetching || !scrollElement) {
+      return;
     }
-  };
+    const handleScroll = (e) => {
+      console.log("e,target-->", e.target.scrollTop);
+      setSkipIndex(Math.floor(e.target.scrollTop / ELEMENT_HEIGHT));
+      if (loadedIndex - skipIndex <= VISIBLE_ELEMENTS + THRESHOLD_ELEMENTS) {
+        if (offset >= data?.count) {
+          return;
+        }
+        setOffset(offset + limit);
+      }
+    };
 
-  scrollElement.addEventListener("scroll", handleScroll);
+    scrollElement.addEventListener("scroll", handleScroll);
 
-  return () => {
-    scrollElement.removeEventListener("scroll", handleScroll);
-  };
-}, [ offset, fullData.length, scrollTop]);
+    return () => scrollElement.removeEventListener("scroll", handleScroll);
+  }, [containerRef, skipIndex, loadedIndex, offset, isFetching, data?.count]);
 
-
- const onScroll = useCallback(
-   (e) => {
-     // alert('asd')
-     // console.log("e.target.clientHeight--->", e.target.clientHeight);
-     // console.log("e.target.scrollTop--->", e.target.scrollTop);
-     console.log("e.target", e);
-     if (
-       e.target.clientHeight + e.target.scrollTop >=
-       e.target.scrollHeight - threshold
-     ) {
-      setIsScrolling(false);
-      setOffset((prevOffset) => prevOffset + limit);
-     }
-   },
-   []
- );
-
-
-
+  const navigate = useNavigate();
   const clickHandler = useCallback(
     (id) => {
       navigate(`/pokemon/${id}`);
@@ -194,67 +87,52 @@ useEffect(() => {
     [navigate]
   );
 
-  console.log("startIndex==>>>>", startIndex);
-  console.log("endIndex==>>>>", endIndex);
-
-  // const pokemonsToRender= useMemo(()=> fullData.slice(startIndex, endIndex),[fullData,startIndex,endIndex])
-  // const pokemonsToRender = fullData.slice(startIndex, endIndex)
-
-  // console.log("pokemonsToRender==>>>", pokemonsToRender);
+  //  const handleUpClick = () => {
+  //    setSkipIndex(0);
+  //   //  setTimeout(() => {
+  //   //    window.scrollTo({ behavior: "smooth", top: 0 }); // Прокрутка страницы вверх
+  //   //  }, 100); // Задержка в 100 миллисекунд
+  //   containerRef.current.scrollIntoView({ behavior: "smooth", block: "start" , inline:'start'});
+  //  };
 
   return (
     <>
       <div>
-        <Link to="/">
+        <Link to="/pokemon">
           <img alt="home" src={logo} title="home" />
         </Link>
       </div>
-      {/* <h1>ПОКЕМОНЫ ЕПТА</h1> */}
-      <div
-        ref={scrollElementRef}
-        style={{
-          border: "3px solid red",
-          height: containerHeight,
-          overflowY: "scroll",
-          position: "relative",
-        }}
-        onScroll={(e)=>onScroll(e)}
-      >
-        <div style={{ height: getTopHeight }} />
-        {fullData?.map((pokemon) => {
-          // console.log("pokemon", pokemon);
-          // const pokemon = fullData[virtualItem.index];
-          return (
-            <div
-              key={pokemon.name}
-              style={{
-                backgroundColor: "white",
-                border: "1px solid blue",
-                boxSizing: "border-box",
-                color: "red",
-                height: itemHeight,
-                top: 0,
-                transform: `translateY(${pokemon.offsetTop})px`,
-              }}
-              onClick={() => {
-                clickHandler(pokemon.name);
-              }}
-            >
-              <div>{pokemon.name}</div>
-              {/* <img alt={`${pokemon.name}`} src={pokemon.url} /> */}
-            </div>
-          );
-        })}
-        <div style={{ height: getBottomHeight }} />
-        {isFetching && <div>Loading...</div>}
-        {/* <VirtualScroll
-          containerHeight={containerHeight}
-          items={pokemonsToRender}
-          rowHeight={itemHeight}
-          totalItems={fullData.length}
-          visibleItemsLength={20}
-        /> */}
-      </div>
+
+      <Wrapper $containerHeight={WRAPPER_HEIGHT} ref={containerRef}>
+        <div style={{ width: "200px" }}>
+          <div
+            style={{ border: "1px solid green", height: `${skipHeight}px` }}
+          ></div>
+
+          {fullData?.slice(skipIndex, skipIndex + VISIBLE_ELEMENTS).map((i) => {
+            return (
+              <PokemonCard
+                $itemHeight={ELEMENT_HEIGHT}
+                // key={item.name}
+                key={i.name}
+                onClick={() => clickHandler(i.name)}
+              >
+                <div>{i.name}</div>
+              </PokemonCard>
+            );
+          })}
+          {isFetching && <div>Loading...</div>}
+          {offset >= data?.count && <div>Покемонычи закончились</div>}
+          {/* {<button onClick={() => handleUpClick()}>UP!</button>} */}
+          {/* <div
+          style={{
+            border: "1px solid black",
+            display:"none",
+            height: `${notVisibleBottomHeight}px`
+          }}
+        ></div> */}
+        </div>
+      </Wrapper>
     </>
   );
 };
