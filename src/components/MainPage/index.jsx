@@ -12,9 +12,10 @@ const WRAPPER_HEIGHT = 600;
 const VISIBLE_ELEMENTS = 20;
 const ELEMENT_HEIGHT = 40;
 const THRESHOLD_ELEMENTS = 5;
+
 const limit = 20;
 
-// const visibleHeight = VISIBLE_ELEMENTS * ELEMENT_HEIGHT;
+//const visibleHeight = VISIBLE_ELEMENTS * ELEMENT_HEIGHT;
 
 const MainPage = () => {
   const [skipIndex, setSkipIndex] = useState(0); // для слайса данных
@@ -38,7 +39,7 @@ const MainPage = () => {
       //   setFullData((prevData) => [...prevData, ...data]);
       // },
       // skip: false,
-    }
+    },
   );
   //select from results / ку - посмотреть можно ли аккумулировать данные
   // console.log("loadedIndex-->", loadedIndex);
@@ -84,7 +85,7 @@ const MainPage = () => {
     (id) => {
       navigate(`/pokemon/${id}`);
     },
-    [navigate]
+    [navigate],
   );
 
   //  const handleUpClick = () => {

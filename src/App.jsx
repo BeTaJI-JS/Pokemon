@@ -2,11 +2,11 @@ import { Provider } from "react-redux";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import "./App.css";
 
-import MainPage from "./components/MainPage"; 
+import MainPage from "./components/MainPage";
 import NestedPage from "./components/NestedPage";
 import store from "./store";
 
-const App =() => {
+const App = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
@@ -17,6 +17,6 @@ const App =() => {
       </BrowserRouter>
     </Provider>
   );
-}
+};
 
 export default App;

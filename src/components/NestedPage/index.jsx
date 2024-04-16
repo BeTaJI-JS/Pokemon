@@ -3,15 +3,14 @@ import { Link, useParams } from "react-router-dom";
 import logo from "../../assets/pokedex_logo.png";
 import { useGetItemQuery } from "../../store/api";
 
-
-export const NestedPage =()=> {
-const {id} = useParams()
-// console.log("id,", id);
+export const NestedPage = () => {
+  const { id } = useParams();
+  // console.log("id,", id);
   const { data: pokeInfo } = useGetItemQuery({ id });
 
-// console.log("pokeInfo,", pokeInfo)
+  // console.log("pokeInfo,", pokeInfo)
 
-// сделат компонент карточки и пробрасывать значения туда либо соатвит ькак есть и стилизовать - посмотрим
+  // сделат компонент карточки и пробрасывать значения туда либо соатвит ькак есть и стилизовать - посмотрим
   return (
     <>
       <div>
@@ -49,6 +48,6 @@ const {id} = useParams()
       </div>
     </>
   );
-}
+};
 
-export default NestedPage
+export default NestedPage;
