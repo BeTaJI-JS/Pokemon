@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 
-import logo from "../../assets/pokedex_logo.png";
-import { useGetItemQuery } from "../../store/api";
+import logo from "assets/pokedex_logo.png";
+import { useGetItemQuery } from "store/api";
 
 export const NestedPage = () => {
   const { id } = useParams();

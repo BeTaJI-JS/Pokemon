@@ -3,17 +3,17 @@ import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-import logo from "../../assets/pokedex_logo.png";
-import { useGetItemsQuery } from "../../store/api";
+import logo from "assets/pokedex_logo.png";
+import { useGetItemsQuery } from "store/api";
 
 import { PokemonCard, Wrapper } from "./styles";
-
-const WRAPPER_HEIGHT = 600;
-const VISIBLE_ELEMENTS = 20;
-const ELEMENT_HEIGHT = 40;
-const THRESHOLD_ELEMENTS = 5;
-
-const limit = 20;
+import {
+  ELEMENT_HEIGHT,
+  THRESHOLD_ELEMENTS,
+  VISIBLE_ELEMENTS,
+  WRAPPER_HEIGHT,
+  limit,
+} from "consts";
 
 //const visibleHeight = VISIBLE_ELEMENTS * ELEMENT_HEIGHT;
 
